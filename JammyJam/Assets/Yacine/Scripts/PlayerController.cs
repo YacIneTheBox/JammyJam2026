@@ -39,18 +39,22 @@ public class PlayerController : MonoBehaviour
         moveInput = moveAction.ReadValue<Vector2>();
     }
 
+    // Ajoute cette propriété au début de la classe PlayerController
+    public bool IsPerfectlySnapped { get; private set; }
+
     void FixedUpdate()
     {
         // 1. Gestion des inputs et de la vélocité propre du joueur
         if (moveInput.magnitude > 0.01f)
         {
-            // Le joueur se déplace activement : on accélère vers la direction voulue
             Vector2 targetVelocity = moveInput * moveSpeed;
             playerVelocity = Vector2.MoveTowards(playerVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
+            
+            // Si le joueur touche aux commandes, il est d'office une anomalie
+            IsPerfectlySnapped = false;
         }
         else
         {
-            // Le joueur a lâché les contrôles : on freine naturellement d'abord
             playerVelocity = Vector2.MoveTowards(playerVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
             
             // 2. Mécanique de Snap (Magnétisme fluide)
@@ -61,19 +65,23 @@ public class PlayerController : MonoBehaviour
 
                 if (distanceToGhost <= snapRadius)
                 {
-                    // La vitesse diminue naturellement en approchant de 0, ce qui empêche le tremblement
                     playerVelocity = vectorToGhost * (snapSpeed * 2f);
-                    
-                    // On plafonne la vitesse pour ne pas aspirer trop violemment quand il est à la limite du rayon
                     if (playerVelocity.magnitude > snapSpeed)
                     {
                         playerVelocity = playerVelocity.normalized * snapSpeed;
                     }
                 }
+
+                // Le joueur est camouflé s'il a lâché les commandes et qu'il est très proche du centre
+                IsPerfectlySnapped = (distanceToGhost <= 0.1f);
+            }
+            else
+            {
+                IsPerfectlySnapped = false;
             }
         }
 
-        // 3. Application de la vélocité finale (Vélocité du joueur + Vélocité du tapis)
+        // 3. Application de la vélocité finale
         Vector2 finalVelocity = playerVelocity;
         
         if (isOnBelt && ghostSlot != null)
