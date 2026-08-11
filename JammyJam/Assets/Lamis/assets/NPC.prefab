@@ -32,8 +32,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 12.26, y: 4.12, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 4.44, y: 4.44, z: 4.44}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -86,7 +86,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -230,7 +230,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.16, y: 0.29}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -266,8 +266,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NpcColorVisual
   spriteRenderer: {fileID: 5368945779703821493}
   sprites:
-    defaultSprite: {fileID: -2369867600477939372, guid: b97f35fa91f682340a617320cdd72791, type: 3}
-    redSprite: {fileID: 8166710274925509176, guid: f58fe9f00272ede4b8c833ca57770f87, type: 3}
-    greenSprite: {fileID: -6099873399732076034, guid: 7778f3e8065579c4b96aedcc4f0f644a, type: 3}
-    blueSprite: {fileID: -2615874204119335, guid: eaffa918098d38b48af8305b9e9f819f, type: 3}
-    brownSprite: {fileID: 2931661829077144855, guid: b327bd550a9a1e24086844a37710b617, type: 3}
+    defaultSprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
+    redSprite: {fileID: 1484081370956951159, guid: a07900901a7a93448a0fe8fa564de57a, type: 3}
+    greenSprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
+    blueSprite: {fileID: 3896515273600853125, guid: 43f5ef8dabdffa644b3701d7b3e833c2, type: 3}
+    brownSprite: {fileID: -2849056189603911607, guid: 22779bb16799aba408a6f75927d22b63, type: 3}

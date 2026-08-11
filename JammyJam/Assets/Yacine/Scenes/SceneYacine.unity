@@ -3830,7 +3830,7 @@ MonoBehaviour:
   pathParent: {fileID: 729588771}
   fallbackWaypoints: []
   includeInactivePathPoints: 0
-  spacing: 3
+  spacing: 1.85
   scrollSpeed: 2
   playerStartIndex: 5
   autoClampPlayerIndex: 1
