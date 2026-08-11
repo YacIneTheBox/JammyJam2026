@@ -1336,6 +1336,57 @@ Transform:
   - {fileID: 265733237}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &154103695
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 154103697}
+  - component: {fileID: 154103696}
+  m_Layer: 0
+  m_Name: PatternManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &154103696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154103695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58d6bd58afad6014596b55cdfefd997b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PatternManager
+  patterns:
+  - patternName: pattern1
+    colors: 010000000200000003000000
+  startingPatternIndex: 0
+  startRevealed: 0
+  currentPatternIndex: 0
+  patternRevealed: 0
+--- !u!4 &154103697
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154103695}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 31.21812, y: 3.84405, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &163435244
 GameObject:
   m_ObjectHideFlags: 0
@@ -2073,6 +2124,7 @@ GameObject:
   - component: {fileID: 342226518}
   - component: {fileID: 342226517}
   - component: {fileID: 342226521}
+  - component: {fileID: 342226522}
   m_Layer: 0
   m_Name: Joueur
   m_TagString: Player
@@ -2224,8 +2276,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8584906, g: 0.45607185, b: 0.14983091, a: 1}
+  m_Sprite: {fileID: 1675812500007761668, guid: b3b439d5bc43dd144834a514d5e8ed64, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2244,9 +2296,9 @@ Transform:
   m_GameObject: {fileID: 342226516}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.26, y: 4.12, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 8.653, y: 5.712, z: 0}
+  m_LocalScale: {x: 4.44, y: 4.44, z: 4.44}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2288,7 +2340,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.16, y: 0.28}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -2296,6 +2348,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &342226522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342226516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c73c86cc8613fe442a5185acc7a9a159, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorController
+  spriteRenderer: {fileID: 342226519}
+  sprites:
+    defaultSprite: {fileID: -4556898731974817700, guid: c1bbeece14b78644382c787615962c3b, type: 3}
+    redSprite: {fileID: 6689405965382390718, guid: 8e0a46f62e4a8554497b43f4a0fddff2, type: 3}
+    greenSprite: {fileID: 6671448098527484260, guid: e81bd4d38451c5946b378cb774dd6869, type: 3}
+    blueSprite: {fileID: 6943382698156152970, guid: 0d567aaed796ea143acab36b74bfd533, type: 3}
+    brownSprite: {fileID: 5821765393662330754, guid: 04ee069eb752bcc45902f48371b6c115, type: 3}
 --- !u!1 &351803289
 GameObject:
   m_ObjectHideFlags: 0
@@ -3726,6 +3797,83 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &743716886
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 743716888}
+  - component: {fileID: 743716887}
+  m_Layer: 0
+  m_Name: LineManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &743716887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743716886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31e2b356c7b1d9345b51e313116b2376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LineManager
+  useNpcInterpolation: 1
+  pathParent: {fileID: 729588771}
+  fallbackWaypoints: []
+  includeInactivePathPoints: 0
+  spacing: 3
+  scrollSpeed: 2
+  playerStartIndex: 5
+  autoClampPlayerIndex: 1
+  startOffset: 0
+  endDespawnMargin: 0.1
+  playerStartsAtLineBeginning: 1
+  playerStartWaypoint: {fileID: 0}
+  activateSlotsOnlyWhenOnPath: 1
+  maxPlayerIndex: 100
+  playerEndBehaviour: 1
+  npcPrefab: {fileID: 8167686250898377675, guid: 9c8468d18d5e516499ffc1d27a24dadb, type: 3}
+  playerController: {fileID: 0}
+  ghostSlot: {fileID: 0}
+  npcContainer: {fileID: 0}
+  placePlayerAtStart: 1
+  rotateEntitiesWithPath: 0
+  rotationOffset: 0
+  onPlayerSlotReachedEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  totalLength: 0
+  slotCount: 0
+  actualPlayerIndex: 0
+  runtimeStartOffset: 0
+  beltTravel: 0
+  playerSlotDistance: 0
+  previousPlayerSlotDistance: 0
+  playerSlotReachedEnd: 0
+--- !u!4 &743716888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 743716886}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.49393, y: 1.86813, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &772644877
 GameObject:
   m_ObjectHideFlags: 0
@@ -6409,6 +6557,70 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1861040129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1861040131}
+  - component: {fileID: 1861040130}
+  m_Layer: 0
+  m_Name: scannerChpt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1861040130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861040129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd2fd37f45969774fb32643ee744ca88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScannerCheckpoint
+  lineManager: {fileID: 743716887}
+  pathParent: {fileID: 0}
+  checkpointPoint: {fileID: 0}
+  useManualDistance: 0
+  manualDistance: 0
+  fireOnce: 1
+  enableDebugLogs: 1
+  checkpointDistance: 0
+  hasFired: 0
+  playerController: {fileID: 0}
+  playerColorController: {fileID: 0}
+  requireOnBelt: 1
+  requireNearSlot: 1
+  presenceRadius: 3
+  onSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  onFail:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &1861040131
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861040129}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 65.81, y: -16.52, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1863128266
 GameObject:
   m_ObjectHideFlags: 0
@@ -6778,6 +6990,61 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1977528845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1977528847}
+  - component: {fileID: 1977528846}
+  m_Layer: 0
+  m_Name: patternChpt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1977528846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977528845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48f53d6fb0db234fa0ce362d3627f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PatternCheckpoint
+  lineManager: {fileID: 743716887}
+  pathParent: {fileID: 729588771}
+  checkpointPoint: {fileID: 0}
+  useManualDistance: 0
+  manualDistance: 0
+  fireOnce: 1
+  enableDebugLogs: 1
+  checkpointDistance: 0
+  hasFired: 0
+  action: 0
+  specificPatternIndex: 0
+--- !u!4 &1977528847
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977528845}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 56, y: 8.4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1986912090
 GameObject:
   m_ObjectHideFlags: 0
@@ -89185,6 +89452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f430e7483c7bd4eb56e2c85b802495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostSlot
+  drivenByLineManager: 0
   waypoints:
   - {fileID: 437932941}
   - {fileID: 637118214}
@@ -89212,7 +89480,7 @@ MonoBehaviour:
   - {fileID: 1681698864}
   - {fileID: 632362851}
   - {fileID: 2037146535}
-  scrollSpeed: 3
+  scrollSpeed: 6
 --- !u!1 &2078798648
 GameObject:
   m_ObjectHideFlags: 0
@@ -89445,3 +89713,7 @@ SceneRoots:
   - {fileID: 1021652436}
   - {fileID: 520932548}
   - {fileID: 119321275}
+  - {fileID: 743716888}
+  - {fileID: 154103697}
+  - {fileID: 1977528847}
+  - {fileID: 1861040131}
