@@ -869,6 +869,7 @@ GameObject:
   - component: {fileID: 342226520}
   - component: {fileID: 342226519}
   - component: {fileID: 342226518}
+  - component: {fileID: 342226522}
   - component: {fileID: 342226517}
   - component: {fileID: 342226521}
   m_Layer: 7
@@ -1023,7 +1024,7 @@ SpriteRenderer:
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8584906, g: 0.45607185, b: 0.14983091, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1094,6 +1095,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &342226522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342226516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c73c86cc8613fe442a5185acc7a9a159, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorController
+  spriteRenderer: {fileID: 342226519}
+  sprites:
+    defaultSprite: {fileID: -2369867600477939372, guid: b97f35fa91f682340a617320cdd72791, type: 3}
+    redSprite: {fileID: 8166710274925509176, guid: f58fe9f00272ede4b8c833ca57770f87, type: 3}
+    greenSprite: {fileID: -6099873399732076034, guid: 7778f3e8065579c4b96aedcc4f0f644a, type: 3}
+    blueSprite: {fileID: -2615874204119335, guid: eaffa918098d38b48af8305b9e9f819f, type: 3}
+    brownSprite: {fileID: 2931661829077144855, guid: b327bd550a9a1e24086844a37710b617, type: 3}
 --- !u!1 &437932940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1296,6 +1316,70 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!1 &572660294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 572660296}
+  - component: {fileID: 572660295}
+  m_Layer: 0
+  m_Name: scannerChpt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &572660295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572660294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd2fd37f45969774fb32643ee744ca88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScannerCheckpoint
+  lineManager: {fileID: 2093378082}
+  pathParent: {fileID: 729588771}
+  checkpointPoint: {fileID: 0}
+  useManualDistance: 0
+  manualDistance: 0
+  fireOnce: 1
+  enableDebugLogs: 1
+  checkpointDistance: 0
+  hasFired: 0
+  playerController: {fileID: 342226518}
+  playerColorController: {fileID: 342226522}
+  requireOnBelt: 1
+  requireNearSlot: 1
+  presenceRadius: 3
+  onSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  onFail:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &572660296
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572660294}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 46.2, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &575745350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1625,6 +1709,61 @@ Transform:
   - {fileID: 1990795769}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &806796568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 806796570}
+  - component: {fileID: 806796569}
+  m_Layer: 0
+  m_Name: patternChpt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &806796569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806796568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48f53d6fb0db234fa0ce362d3627f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PatternCheckpoint
+  lineManager: {fileID: 2093378082}
+  pathParent: {fileID: 729588771}
+  checkpointPoint: {fileID: 0}
+  useManualDistance: 0
+  manualDistance: 0
+  fireOnce: 1
+  enableDebugLogs: 1
+  checkpointDistance: 0
+  hasFired: 0
+  action: 0
+  specificPatternIndex: 0
+--- !u!4 &806796570
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806796568}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 30.87, y: 13.24, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &934650130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1945,6 +2084,57 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16.75613, y: 2.00689, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1445498523
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1445498525}
+  - component: {fileID: 1445498524}
+  m_Layer: 0
+  m_Name: PatternManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1445498524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445498523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58d6bd58afad6014596b55cdfefd997b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PatternManager
+  patterns:
+  - patternName: pattern1
+    colors: 010000000200000003000000
+  startingPatternIndex: 0
+  startRevealed: 0
+  currentPatternIndex: 0
+  patternRevealed: 0
+--- !u!4 &1445498525
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445498523}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 31.21812, y: 3.84405, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2277,6 +2467,7 @@ SceneRoots:
   - {fileID: 25567298}
   - {fileID: 1093258822}
   - {fileID: 2093378083}
+  - {fileID: 1445498525}
   - {fileID: 16942987}
   - {fileID: 342226520}
   - {fileID: 575745351}
@@ -2286,3 +2477,5 @@ SceneRoots:
   - {fileID: 2068403151}
   - {fileID: 1303213421}
   - {fileID: 43344080}
+  - {fileID: 806796570}
+  - {fileID: 572660296}

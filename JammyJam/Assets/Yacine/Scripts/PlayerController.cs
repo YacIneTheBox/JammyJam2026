@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 playerVelocity;
     private bool isOnBelt = false;
+    public bool IsOnBelt => isOnBelt;
 
     void Start()
     {

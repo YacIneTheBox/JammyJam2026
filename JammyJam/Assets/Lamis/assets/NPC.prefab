@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 823793556700209060}
   - component: {fileID: 8900690782598153453}
   - component: {fileID: 2221429882729370868}
+  - component: {fileID: 4243154963765933902}
   m_Layer: 6
   m_Name: NPC
   m_TagString: Untagged
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.1490196, g: 0.83579975, b: 0.85882354, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -251,3 +252,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LineEntity
   entityType: 1
   lineIndex: -1
+--- !u!114 &4243154963765933902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8167686250898377675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ae2e42fc0c64449b89ced5be059cef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcColorVisual
+  spriteRenderer: {fileID: 5368945779703821493}
+  sprites:
+    defaultSprite: {fileID: -2369867600477939372, guid: b97f35fa91f682340a617320cdd72791, type: 3}
+    redSprite: {fileID: 8166710274925509176, guid: f58fe9f00272ede4b8c833ca57770f87, type: 3}
+    greenSprite: {fileID: -6099873399732076034, guid: 7778f3e8065579c4b96aedcc4f0f644a, type: 3}
+    blueSprite: {fileID: -2615874204119335, guid: eaffa918098d38b48af8305b9e9f819f, type: 3}
+    brownSprite: {fileID: 2931661829077144855, guid: b327bd550a9a1e24086844a37710b617, type: 3}
