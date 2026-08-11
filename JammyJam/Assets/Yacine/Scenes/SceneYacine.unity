@@ -3832,7 +3832,7 @@ MonoBehaviour:
   includeInactivePathPoints: 0
   spacing: 1.85
   scrollSpeed: 2
-  playerStartIndex: 5
+  playerStartIndex: 10
   autoClampPlayerIndex: 1
   startOffset: 0
   endDespawnMargin: 0.1
@@ -89480,7 +89480,7 @@ MonoBehaviour:
   - {fileID: 1681698864}
   - {fileID: 632362851}
   - {fileID: 2037146535}
-  scrollSpeed: 6
+  scrollSpeed: 10.43
 --- !u!1 &2078798648
 GameObject:
   m_ObjectHideFlags: 0
