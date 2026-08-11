@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class SurveillanceCamera2D : MonoBehaviour
@@ -14,6 +15,7 @@ public class SurveillanceCamera2D : MonoBehaviour
     private Transform pivotTransform;
     private float startRotationZ;
     private Coroutine detectionCoroutine;
+    private GameObject trackedPlayer; // Keeps track of who is in view
 
     void Start()
     {
@@ -49,6 +51,7 @@ public class SurveillanceCamera2D : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.name == "Joueur")
         {
+            trackedPlayer = collision.gameObject;
             Debug.Log("[" + gameObject.name + "] detected by cameras - starting countdown...");
             if (detectionCoroutine == null)
             {
@@ -66,6 +69,7 @@ public class SurveillanceCamera2D : MonoBehaviour
             {
                 StopCoroutine(detectionCoroutine);
                 detectionCoroutine = null;
+                trackedPlayer = null;
             }
         }
     }
@@ -76,7 +80,6 @@ public class SurveillanceCamera2D : MonoBehaviour
 
         while (timer > 0f)
         {
-            // Log each second clearly (e.g., 3, then 2, then 1)
             int displaySeconds = Mathf.CeilToInt(timer);
             Debug.Log("[" + gameObject.name + "] Countdown: " + displaySeconds);
 
@@ -85,6 +88,15 @@ public class SurveillanceCamera2D : MonoBehaviour
         }
 
         Debug.Log("[" + gameObject.name + "] YOU'RE DEAD!");
+        
+        // Kill the player and reload the scene
+        if (trackedPlayer != null)
+        {
+            Destroy(trackedPlayer);
+        }
+        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
         detectionCoroutine = null;
     }
 }
