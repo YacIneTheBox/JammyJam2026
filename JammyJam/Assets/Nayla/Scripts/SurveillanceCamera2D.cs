@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; // L'ajout de ton collègue indispensable pour recharger le niveau
 using System.Collections;
 
 public class SurveillanceCamera2D : MonoBehaviour
@@ -14,8 +14,12 @@ public class SurveillanceCamera2D : MonoBehaviour
 
     private Transform pivotTransform;
     private float startRotationZ;
+    
     private Coroutine detectionCoroutine;
-    private GameObject trackedPlayer; // Keeps track of who is in view
+    
+    // On utilise directement le PlayerController plutôt qu'un simple GameObject 
+    // pour avoir accès à notre variable IsPerfectlySnapped
+    private PlayerController targetPlayer; 
 
     void Start()
     {
@@ -32,6 +36,7 @@ public class SurveillanceCamera2D : MonoBehaviour
 
     void Update()
     {
+        // 1. Logique de rotation
         if (shouldRotate)
         {
             float angle = Mathf.Sin(Time.time * (rotationSpeed * Mathf.Deg2Rad)) * maxAngle;
@@ -45,18 +50,35 @@ public class SurveillanceCamera2D : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
             }
         }
+
+        // 2. Notre logique intelligente de détection (Camouflage sur le tapis)
+        if (targetPlayer != null)
+        {
+            if (!targetPlayer.IsPerfectlySnapped)
+            {
+                if (detectionCoroutine == null)
+                {
+                    Debug.Log("[" + gameObject.name + "] Anomalie détectée - Démarrage du scan...");
+                    detectionCoroutine = StartCoroutine(DetectionCountdown());
+                }
+            }
+            else 
+            {
+                if (detectionCoroutine != null)
+                {
+                    Debug.Log("[" + gameObject.name + "] Cible fondue dans la masse. Annulation de l'alerte.");
+                    ResetDetection();
+                }
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") || collision.name == "Joueur")
         {
-            trackedPlayer = collision.gameObject;
-            Debug.Log("[" + gameObject.name + "] detected by cameras - starting countdown...");
-            if (detectionCoroutine == null)
-            {
-                detectionCoroutine = StartCoroutine(DetectionCountdown());
-            }
+            // On enregistre le joueur sans déclencher la mort instantanément
+            targetPlayer = collision.GetComponent<PlayerController>();
         }
     }
 
@@ -64,13 +86,17 @@ public class SurveillanceCamera2D : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.name == "Joueur")
         {
-            Debug.Log("[" + gameObject.name + "] escaped camera view!");
-            if (detectionCoroutine != null)
-            {
-                StopCoroutine(detectionCoroutine);
-                detectionCoroutine = null;
-                trackedPlayer = null;
-            }
+            targetPlayer = null;
+            ResetDetection();
+        }
+    }
+
+    private void ResetDetection()
+    {
+        if (detectionCoroutine != null)
+        {
+            StopCoroutine(detectionCoroutine);
+            detectionCoroutine = null;
         }
     }
 
@@ -81,18 +107,18 @@ public class SurveillanceCamera2D : MonoBehaviour
         while (timer > 0f)
         {
             int displaySeconds = Mathf.CeilToInt(timer);
-            Debug.Log("[" + gameObject.name + "] Countdown: " + displaySeconds);
+            Debug.Log("[" + gameObject.name + "] Alerte dans : " + displaySeconds);
 
             yield return new WaitForSeconds(1f);
             timer -= 1f;
         }
 
-        Debug.Log("[" + gameObject.name + "] YOU'RE DEAD!");
+        Debug.Log("[" + gameObject.name + "] GAME OVER !");
         
-        // Kill the player and reload the scene
-        if (trackedPlayer != null)
+        // 3. L'ajout de ton collègue intégré proprement
+        if (targetPlayer != null)
         {
-            Destroy(trackedPlayer);
+            Destroy(targetPlayer.gameObject);
         }
         
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
