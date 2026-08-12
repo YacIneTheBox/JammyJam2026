@@ -18,18 +18,25 @@ public class PlayerController : MonoBehaviour
     [Header("Références")]
     public GhostSlot ghostSlot; 
     public InputAction moveAction; 
+    public Animator animator;
 
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private Vector2 playerVelocity;
+    private Vector2 lastMoveInput = new Vector2(0, -1); // Regarde vers le bas par défaut
     private bool isOnBelt = false;
     public bool IsOnBelt => isOnBelt;
+
+    public bool IsPerfectlySnapped { get; private set; }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f; 
         rb.freezeRotation = true; 
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
     }
 
     private void OnEnable() => moveAction.Enable();
@@ -38,10 +45,29 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
-    }
 
-    // Ajoute cette propriété au début de la classe PlayerController
-    public bool IsPerfectlySnapped { get; private set; }
+        // Mise à jour des animations
+        if (animator != null)
+        {
+            bool isMoving = moveInput.magnitude > 0.01f;
+            
+            // Dit à l'Animator si on marche ou si on est idle
+            animator.SetBool("isWalking", isMoving);
+
+            if (isMoving)
+            {
+                lastMoveInput = moveInput;
+                animator.SetFloat("moveX", moveInput.x);
+                animator.SetFloat("moveY", moveInput.y);
+            }
+            else
+            {
+                // Maintient la direction du regard pour l'idle quand il s'arrête
+                animator.SetFloat("moveX", lastMoveInput.x);
+                animator.SetFloat("moveY", lastMoveInput.y);
+            }
+        }
+    }
 
     void FixedUpdate()
     {
