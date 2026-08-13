@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4295352627328912767}
   - component: {fileID: 5368945779703821493}
-  - component: {fileID: 8904029309848067459}
   - component: {fileID: 823793556700209060}
   - component: {fileID: 8900690782598153453}
   - component: {fileID: 2221429882729370868}
   - component: {fileID: 4243154963765933902}
+  - component: {fileID: 4432903283325689308}
   m_Layer: 6
   m_Name: NPC
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 8167686250898377675}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.26, y: 4.12, z: 0}
+  m_LocalPosition: {x: 0.5, y: -1.24, z: 0}
   m_LocalScale: {x: 4.44, y: 4.44, z: 4.44}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -86,85 +86,17 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
+  m_Sprite: {fileID: -1673532935318686872, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.16, y: 0.29}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8904029309848067459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8167686250898377675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e038ec7eba1c44a8ca638e37dc2f59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  moveSpeed: 7
-  acceleration: 120
-  deceleration: 50
-  snapRadius: 1.2
-  snapSpeed: 8
-  ghostSlot: {fileID: 0}
-  moveAction:
-    m_Name: Move
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: ad4b88e8-fe0c-4389-85ec-7664f132fe96
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 2D Vector
-      m_Id: 4fe9a0d0-5740-4ce6-b4d6-b1fe6f157c44
-      m_Path: 2DVector
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Move
-      m_Flags: 4
-    - m_Name: up
-      m_Id: a201a139-ea24-4de8-b499-a731bc36d91b
-      m_Path: <Keyboard>/w
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Move
-      m_Flags: 8
-    - m_Name: down
-      m_Id: 3886b805-73d3-44d2-978c-6c423458e4c1
-      m_Path: <Keyboard>/s
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Move
-      m_Flags: 8
-    - m_Name: left
-      m_Id: f737a7b2-2b2e-4dee-9512-543dfd49d6b3
-      m_Path: <Keyboard>/a
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Move
-      m_Flags: 8
-    - m_Name: right
-      m_Id: f7cf5a9b-649c-4434-a3a2-b0972569b775
-      m_Path: <Keyboard>/d
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Move
-      m_Flags: 8
-    m_Flags: 0
-    m_Priority: 0
 --- !u!50 &823793556700209060
 Rigidbody2D:
   serializedVersion: 5
@@ -226,17 +158,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.06, y: 0.33}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.90625, y: -0.6896552}
     oldSize: {x: 0.16, y: 0.29}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 0.16, y: 0.29}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.18, y: 0.32}
   m_EdgeRadius: 0
 --- !u!114 &2221429882729370868
 MonoBehaviour:
@@ -265,9 +197,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcColorVisual
   spriteRenderer: {fileID: 5368945779703821493}
-  sprites:
-    defaultSprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
-    redSprite: {fileID: 1484081370956951159, guid: a07900901a7a93448a0fe8fa564de57a, type: 3}
-    greenSprite: {fileID: 5108111506031256789, guid: dfa0c962b3c384f44a9b6886a73f6cf4, type: 3}
-    blueSprite: {fileID: 3896515273600853125, guid: 43f5ef8dabdffa644b3701d7b3e833c2, type: 3}
-    brownSprite: {fileID: -2849056189603911607, guid: 22779bb16799aba408a6f75927d22b63, type: 3}
+  additionalSpriteRenderers: []
+  tints:
+    defaultColor: {r: 1, g: 1, b: 1, a: 1}
+    redColor: {r: 1, g: 0, b: 0, a: 1}
+    greenColor: {r: 0, g: 1, b: 0, a: 1}
+    blueColor: {r: 0, g: 0, b: 1, a: 1}
+    brownColor: {r: 0.55, g: 0.35, b: 0.15, a: 1}
+--- !u!95 &4432903283325689308
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8167686250898377675}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 79c6e9df021996145bebb079ff78a6b3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
