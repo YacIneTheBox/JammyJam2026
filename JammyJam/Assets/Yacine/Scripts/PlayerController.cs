@@ -74,7 +74,8 @@ public class PlayerController : MonoBehaviour
         // 1. Gestion des inputs et de la vélocité propre du joueur
         if (moveInput.magnitude > 0.01f)
         {
-            Vector2 targetVelocity = moveInput * moveSpeed;
+            // On normalise l'input pour un mouvement fluide même en diagonale
+            Vector2 targetVelocity = moveInput.normalized * moveSpeed;
             playerVelocity = Vector2.MoveTowards(playerVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
             
             // Si le joueur touche aux commandes, il est d'office une anomalie
@@ -92,11 +93,15 @@ public class PlayerController : MonoBehaviour
 
                 if (distanceToGhost <= snapRadius)
                 {
-                    playerVelocity = vectorToGhost * (snapSpeed * 2f);
-                    if (playerVelocity.magnitude > snapSpeed)
+                    // On garde ton calcul de snap
+                    Vector2 snapVelocity = vectorToGhost * (snapSpeed * 2f);
+                    if (snapVelocity.magnitude > snapSpeed)
                     {
-                        playerVelocity = playerVelocity.normalized * snapSpeed;
+                        snapVelocity = snapVelocity.normalized * snapSpeed;
                     }
+                    
+                    // On l'intègre via MoveTowards à la vélocité du joueur pour éviter un téléport brutal
+                    playerVelocity = Vector2.MoveTowards(playerVelocity, snapVelocity, acceleration * Time.fixedDeltaTime);
                 }
 
                 // Le joueur est camouflé s'il a lâché les commandes et qu'il est très proche du centre
@@ -111,6 +116,7 @@ public class PlayerController : MonoBehaviour
         // 3. Application de la vélocité finale
         Vector2 finalVelocity = playerVelocity;
         
+        // CORRECTION : On ajoute TOUJOURS la force de la rivière (tapis) si le joueur est dessus !
         if (isOnBelt && ghostSlot != null)
         {
             finalVelocity += ghostSlot.CurrentVelocity;
