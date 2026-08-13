@@ -1,10 +1,11 @@
 using UnityEngine;
 
 [RequireComponent(typeof(LineEntity))]
-public class NPCColor : MonoBehaviour
+public class NPCCOLOR : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
-    public ColorSpriteSet sprites = new ColorSpriteSet();
+    public SpriteRenderer[] additionalSpriteRenderers;
+    public ColorTintSet tints = new ColorTintSet();
 
     private LineEntity lineEntity;
     private PatternManager cachedPatternManager;
@@ -73,12 +74,18 @@ public class NPCColor : MonoBehaviour
 
     public void ApplyColor(ColorId colorId)
     {
-        if (spriteRenderer == null)
-            return;
+        Color color = tints.GetColor(colorId);
 
-        Sprite sprite = sprites.GetSprite(colorId);
+        if (spriteRenderer != null)
+            spriteRenderer.color = color;
 
-        if (sprite != null)
-            spriteRenderer.sprite = sprite;
+        if (additionalSpriteRenderers != null)
+        {
+            foreach (SpriteRenderer sr in additionalSpriteRenderers)
+            {
+                if (sr != null)
+                    sr.color = color;
+            }
+        }
     }
 }
