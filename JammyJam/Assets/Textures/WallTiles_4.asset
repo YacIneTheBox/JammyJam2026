@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: walls_floor_17
+  m_Name: WallTiles_4
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
-  m_Sprite: {fileID: -3772576965443385430, guid: 9f4889906c8d9794c86297ecddd4bf93, type: 3}
+  m_Sprite: {fileID: -8931138404692000773, guid: 7d1575dbc3ff412448b4cfac1197b9fa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
