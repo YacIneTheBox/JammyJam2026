@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WallTiles_4
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
   m_Sprite: {fileID: -8931138404692000773, guid: 7d1575dbc3ff412448b4cfac1197b9fa, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6152788, g: 0.3890174, b: 0.8867924, a: 1}
   m_Transform:
     e00: 1
     e01: 0
