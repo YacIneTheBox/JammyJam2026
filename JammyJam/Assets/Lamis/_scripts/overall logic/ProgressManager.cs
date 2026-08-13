@@ -26,6 +26,22 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
+    public static bool HasInstance => instance != null;
+
+    public static ProgressManager InstanceOrNull => instance;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticReferences()
+    {
+        instance = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
+    }
+
     [SerializeField] private int totalLevels = 4;
     public int TotalLevels => totalLevels;
 

@@ -87,6 +87,10 @@ public class LineManager : MonoBehaviour
     [Header("Events")]
     public UnityEvent onPlayerSlotReachedEnd;
 
+    [Header("End Of Line Validation")]
+    [Tooltip("Max distance between the player and their ghost slot to count as 'present' at the end. If 0, uses snapRadius.")]
+    public float endPresenceRadius = 1.5f;
+
     [Header("Debug Read Only")]
     [SerializeField] private float totalLength;
     [SerializeField] private int slotCount;
@@ -721,12 +725,16 @@ public class LineManager : MonoBehaviour
             {
                 playerSlotReachedEnd = true;
 
-                Debug.Log("[LineManager] Player slot reached the end of the line. Level complete.");
-
-                if (onPlayerSlotReachedEnd != null)
-                    onPlayerSlotReachedEnd.Invoke();
-
-                HandlePlayerEnd();
+                if (IsPlayerPresentAtSlot())
+                {
+                    Debug.Log("[LineManager] Player present at the end of the line. Win.");
+                    GameManager.Instance.TriggerWin();
+                }
+                else
+                {
+                    Debug.LogWarning("[LineManager] Player slot reached the end empty. Loss.");
+                    GameManager.Instance.TriggerLoss(LossReason.SlotReachedEndEmpty);
+                }
             }
         }
     }
@@ -950,6 +958,27 @@ public class LineManager : MonoBehaviour
         }
 
         return Mathf.Clamp(low, 0, cumulativeDistances.Count - 2);
+    }
+
+    private bool IsPlayerPresentAtSlot()
+    {
+        if (playerController == null)
+            return false;
+
+        if (!playerController.IsOnBelt)
+            return false;
+
+        if (playerController.ghostSlot == null)
+            return false;
+
+        float radius = endPresenceRadius > 0f ? endPresenceRadius : playerController.snapRadius;
+
+        float distanceToSlot = Vector2.Distance(
+            playerController.transform.position,
+            playerController.ghostSlot.transform.position
+        );
+
+        return distanceToSlot <= radius;
     }
 
     private void OnValidate()

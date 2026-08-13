@@ -19,22 +19,50 @@ public class MenuUIController : MonoBehaviour
     [Header("Settings Buttons")]
     public Button settingsBackButton;
 
+    private GameManager cachedGameManager;
+
     private void Start()
     {
-        GameManager.Instance.NotifyMenuSceneReady();
+        // Safe during normal startup.
+        if (GameManager.Instance != null)
+            GameManager.Instance.NotifyMenuSceneReady();
+
+        SubscribeToGameManager();
     }
 
     private void OnEnable()
     {
-        GameManager.Instance.OnGameStateChanged += HandleStateChanged;
+        SubscribeToGameManager();
         AddListeners();
-        HandleStateChanged(GameManager.Instance.CurrentState);
+
+        if (cachedGameManager != null)
+            HandleStateChanged(cachedGameManager.CurrentState);
     }
 
     private void OnDisable()
     {
-        GameManager.Instance.OnGameStateChanged -= HandleStateChanged;
+        UnsubscribeFromGameManager();
         RemoveListeners();
+    }
+
+    private void SubscribeToGameManager()
+    {
+        if (cachedGameManager != null)
+            return;
+
+        // IMPORTANT: InstanceOrNull does NOT create a new GameManager.
+        cachedGameManager = GameManager.InstanceOrNull;
+
+        if (cachedGameManager != null)
+            cachedGameManager.OnGameStateChanged += HandleStateChanged;
+    }
+
+    private void UnsubscribeFromGameManager()
+    {
+        if (cachedGameManager != null)
+            cachedGameManager.OnGameStateChanged -= HandleStateChanged;
+
+        cachedGameManager = null;
     }
 
     private void AddListeners()

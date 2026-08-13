@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // L'ajout de ton collègue indispensable pour recharger le niveau
 using System.Collections;
 
 public class SurveillanceCamera2D : MonoBehaviour
@@ -14,44 +13,38 @@ public class SurveillanceCamera2D : MonoBehaviour
 
     private Transform pivotTransform;
     private float startRotationZ;
-    
     private Coroutine detectionCoroutine;
-    
-    // On utilise directement le PlayerController plutôt qu'un simple GameObject 
-    // pour avoir accès à notre variable IsPerfectlySnapped
-    private PlayerController targetPlayer; 
+    private PlayerController targetPlayer;
+    // Simple unique ID generator (avoids obsolete GetInstanceID)
+    private static int nextSourceId = 1;
+    private int sourceId;
 
     void Start()
     {
+        sourceId = nextSourceId++;
+
         pivotTransform = transform.parent;
+
         if (pivotTransform != null)
-        {
             startRotationZ = pivotTransform.eulerAngles.z;
-        }
         else
-        {
             startRotationZ = transform.eulerAngles.z;
-        }
     }
 
     void Update()
     {
-        // 1. Logique de rotation
+        // 1. Logique de rotation (inchangée)
         if (shouldRotate)
         {
             float angle = Mathf.Sin(Time.time * (rotationSpeed * Mathf.Deg2Rad)) * maxAngle;
-            
+
             if (pivotTransform != null)
-            {
                 pivotTransform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
-            }
             else
-            {
                 transform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
-            }
         }
 
-        // 2. Notre logique intelligente de détection (Camouflage sur le tapis)
+        // 2. Logique de détection (inchangée, mais alimente le compteur)
         if (targetPlayer != null)
         {
             if (!targetPlayer.IsPerfectlySnapped)
@@ -62,7 +55,7 @@ public class SurveillanceCamera2D : MonoBehaviour
                     detectionCoroutine = StartCoroutine(DetectionCountdown());
                 }
             }
-            else 
+            else
             {
                 if (detectionCoroutine != null)
                 {
@@ -76,10 +69,7 @@ public class SurveillanceCamera2D : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") || collision.name == "Joueur")
-        {
-            // On enregistre le joueur sans déclencher la mort instantanément
             targetPlayer = collision.GetComponent<PlayerController>();
-        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -98,6 +88,10 @@ public class SurveillanceCamera2D : MonoBehaviour
             StopCoroutine(detectionCoroutine);
             detectionCoroutine = null;
         }
+
+        // Laisse le compteur redescendre quand le scan est annulé
+        if (SuspicionManager.Instance != null)
+            SuspicionManager.Instance.RemoveSource(sourceId);
     }
 
     private IEnumerator DetectionCountdown()
@@ -109,20 +103,44 @@ public class SurveillanceCamera2D : MonoBehaviour
             int displaySeconds = Mathf.CeilToInt(timer);
             Debug.Log("[" + gameObject.name + "] Alerte dans : " + displaySeconds);
 
-            yield return new WaitForSeconds(1f);
-            timer -= 1f;
+            // Décompte fluide de cette seconde pour remplir le compteur en continu
+            float step = 1f;
+            while (step > 0f && timer > 0f)
+            {
+                float delta = Mathf.Min(Time.deltaTime, step);
+                step -= delta;
+                timer -= delta;
+
+                ReportProgress(timer);
+
+                yield return null;
+            }
         }
 
         Debug.Log("[" + gameObject.name + "] GAME OVER !");
-        
-        // 3. L'ajout de ton collègue intégré proprement
-        if (targetPlayer != null)
-        {
-            Destroy(targetPlayer.gameObject);
-        }
-        
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        // Remplit le compteur à fond, puis signale la perte au GameManager
+        if (SuspicionManager.Instance != null)
+            SuspicionManager.Instance.ReportSuspicion(sourceId, 1f);
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.TriggerLoss(LossReason.CameraCaught);
 
         detectionCoroutine = null;
+    }
+
+    private void ReportProgress(float timer)
+    {
+        if (SuspicionManager.Instance == null)
+            return;
+
+        float progress = 1f - (timer / Mathf.Max(0.1f, requiredDetectionTime));
+        SuspicionManager.Instance.ReportSuspicion(sourceId, progress);
+    }
+
+    private void OnDisable()
+    {
+        if (SuspicionManager.Instance != null)
+            SuspicionManager.Instance.RemoveSource(sourceId);
     }
 }

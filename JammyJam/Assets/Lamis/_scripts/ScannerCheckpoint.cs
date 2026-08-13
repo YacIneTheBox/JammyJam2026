@@ -13,7 +13,7 @@ public class ScannerCheckpoint : PlayerSlotCheckpoint
     [Tooltip("Maximum distance allowed between the player and their ghost slot. If zero, PlayerController.snapRadius is used.")]
     public float presenceRadius = 1.5f;
 
-    [Header("Events")]
+    [Header("Events (optional, for VFX / audio)")]
     public UnityEvent onSuccess;
     public UnityEvent onFail;
 
@@ -22,13 +22,13 @@ public class ScannerCheckpoint : PlayerSlotCheckpoint
         base.Start();
 
         if (playerController == null)
-            playerController = Object.FindFirstObjectByType<PlayerController>();
+            playerController = Object.FindAnyObjectByType<PlayerController>();
 
         if (playerColorController == null && playerController != null)
             playerColorController = playerController.GetComponent<PlayerColorController>();
 
         if (playerColorController == null)
-            playerColorController = Object.FindFirstObjectByType<PlayerColorController>();
+            playerColorController = Object.FindAnyObjectByType<PlayerColorController>();
 
         if (presenceRadius <= 0f && playerController != null)
             presenceRadius = playerController.snapRadius;
@@ -36,39 +36,31 @@ public class ScannerCheckpoint : PlayerSlotCheckpoint
 
     protected override void OnPlayerSlotCrossed()
     {
+        Debug.Log($"[ScannerCheckpoint] Player slot crossed scanner at distance {checkpointDistance}.");
+
         if (PatternManager.Instance == null)
         {
-            Fail("PatternManager is missing.");
+            Debug.LogWarning("[ScannerCheckpoint] PatternManager missing. Scan ignored.");
             return;
         }
 
-        if (!PatternManager.Instance.IsPatternRevealed)
+        // Do not kill the player before the pattern has been revealed.
+        if (!PatternManager.Instance.IsPatternRevealed || !PatternManager.Instance.HasActivePattern())
         {
-            Fail("Pattern has not been revealed yet.");
+            Debug.Log("[ScannerCheckpoint] Pattern not revealed yet. Scan ignored.");
             return;
         }
 
-        if (!PatternManager.Instance.HasActivePattern())
+        if (playerController == null || playerColorController == null)
         {
-            Fail("No active pattern is configured.");
+            Fail(LossReason.External, "Player references missing.");
             return;
         }
 
-        if (playerController == null)
-        {
-            Fail("PlayerController is missing.");
-            return;
-        }
-
-        if (playerColorController == null)
-        {
-            Fail("PlayerColorController is missing.");
-            return;
-        }
-
+        // 1. Presence check -> Empty Slot
         if (requireOnBelt && !playerController.IsOnBelt)
         {
-            Fail("Player is off the conveyor belt.");
+            Fail(LossReason.ScannerEmptySlot, "Player is off the conveyor belt.");
             return;
         }
 
@@ -76,7 +68,7 @@ public class ScannerCheckpoint : PlayerSlotCheckpoint
         {
             if (playerController.ghostSlot == null)
             {
-                Fail("Player ghost slot is missing.");
+                Fail(LossReason.ScannerEmptySlot, "Ghost slot missing.");
                 return;
             }
 
@@ -87,55 +79,59 @@ public class ScannerCheckpoint : PlayerSlotCheckpoint
 
             if (distanceToSlot > presenceRadius)
             {
-                Fail($"Player is too far from their slot. Distance: {distanceToSlot}. Radius: {presenceRadius}.");
+                Fail(LossReason.ScannerEmptySlot, $"Player too far from slot ({distanceToSlot:F2} > {presenceRadius}).");
                 return;
             }
         }
 
-        int lineIndex;
-
-        if (lineManager != null)
-        {
-            lineIndex = lineManager.GetPlayerLineIndex();
-        }
-        else
-        {
-            LineEntity playerEntity = playerController.GetComponent<LineEntity>();
-            lineIndex = playerEntity != null ? playerEntity.lineIndex : -1;
-        }
+        // 2. Color check -> Mismatch
+        int lineIndex = lineManager != null
+            ? lineManager.GetPlayerLineIndex()
+            : GetLineIndexFromEntity();
 
         if (lineIndex < 0)
         {
-            Fail("Player line index is invalid.");
+            Fail(LossReason.ScannerEmptySlot, "Invalid player line index.");
             return;
         }
 
-        ColorId expectedColor = PatternManager.Instance.GetExpectedColor(lineIndex);
-        ColorId currentColor = playerColorController.CurrentColor;
+        ColorId expected = PatternManager.Instance.GetExpectedColor(lineIndex);
+        ColorId current = playerColorController.CurrentColor;
 
-        if (expectedColor == currentColor)
+        if (expected == current)
         {
-            Pass($"Scanner passed. Expected: {expectedColor}, Current: {currentColor}.");
+            Pass($"Scanner passed. Expected {expected}, current {current}.");
         }
         else
         {
-            Fail($"Scanner failed. Expected: {expectedColor}, Current: {currentColor}.");
+            Fail(LossReason.ScannerColorMismatch, $"Scanner failed. Expected {expected}, current {current}.");
         }
+    }
+
+    private int GetLineIndexFromEntity()
+    {
+        if (playerController == null)
+            return -1;
+
+        LineEntity entity = playerController.GetComponent<LineEntity>();
+        return entity != null ? entity.lineIndex : -1;
     }
 
     private void Pass(string message)
     {
-        Debug.Log($"[ScannerCheckpoint] {message}");
+        Debug.Log($"[ScannerCheckpoint] PASS: {message}");
 
         if (onSuccess != null)
             onSuccess.Invoke();
     }
 
-    private void Fail(string reason)
+    private void Fail(LossReason reason, string message)
     {
-        Debug.LogWarning($"[ScannerCheckpoint] {reason}");
+        Debug.LogWarning($"[ScannerCheckpoint] FAIL: {message}");
 
         if (onFail != null)
             onFail.Invoke();
+
+        GameManager.Instance.TriggerLoss(reason);
     }
 }

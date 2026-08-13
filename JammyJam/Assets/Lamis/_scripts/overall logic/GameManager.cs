@@ -1,6 +1,9 @@
+using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public enum GameState
 {
@@ -15,12 +18,14 @@ public enum GameState
 
 public enum LossReason
 {
+    None,
     CameraCaught,
     ScannerColorMismatch,
     ScannerEmptySlot,
     SlotReachedEndEmpty,
     Electrocuted,
     LeftBehind,
+    NotEnoughPaper,
     External
 }
 
@@ -47,21 +52,48 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static bool HasInstance => instance != null;
+
+    public static GameManager InstanceOrNull => instance;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticReferences()
+    {
+        instance = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
+    }
+
     [Header("Scene Names")]
     public string menuSceneName = "MenuScene";
     public string gameSceneName = "GameScene";
 
-    [Tooltip("If false, the game will not load scenes. Useful for testing all menus inside one scene.")]
+    [Tooltip("If false, menus and gameplay are expected to be inside the same scene.")]
     public bool useSceneLoading = true;
+
+    [Header("Level Scenes")]
+    [Tooltip("Scene name for each level, in order. Element 0 = Level 1. Leave empty to use Game Scene Name for all levels.")]
+    public List<string> levelSceneNames = new List<string>();
 
     [Header("Debug Read Only")]
     [SerializeField] private GameState currentState = GameState.MainMenu;
     [SerializeField] private int currentLevel = 1;
+    [SerializeField] private LossReason lastLossReason = LossReason.None;
 
     public GameState CurrentState => currentState;
     public int CurrentLevel => currentLevel;
+    public LossReason LastLossReason => lastLossReason;
 
     public event Action<GameState> OnGameStateChanged;
+    public event Action<LossReason> OnLossTriggered;
+
+    // This will be assigned later by the collection system.
+    // For now, if null, winning is allowed.
+    public Func<bool> customWinRequirement;
 
     private GameState stateBeforeSettings = GameState.MainMenu;
 
@@ -93,10 +125,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (UnityEngine.InputSystem.Keyboard.current == null)
+        Keyboard keyboard = Keyboard.current;
+
+        if (keyboard == null)
             return;
 
-        if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (keyboard.escapeKey.wasPressedThisFrame)
         {
             if (currentState == GameState.Playing)
             {
@@ -113,12 +147,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public string GetSceneNameForLevel(int levelIndex)
+    {
+        int i = levelIndex - 1;
+
+        if (levelSceneNames != null && i >= 0 && i < levelSceneNames.Count && !string.IsNullOrEmpty(levelSceneNames[i]))
+            return levelSceneNames[i];
+
+        return gameSceneName;
+    }
+
+    public bool IsGameplayScene(string sceneName)
+    {
+        if (sceneName == gameSceneName)
+            return true;
+
+        return levelSceneNames != null && levelSceneNames.Contains(sceneName);
+    }
+
     public void GoToMainMenu()
     {
         currentLevel = 0;
+        customWinRequirement = null;
         SetState(GameState.MainMenu);
         LoadMenuSceneIfDifferent();
     }
+
+
 
     public void OpenLevelSelect()
     {
@@ -145,14 +200,38 @@ public class GameManager : MonoBehaviour
         int totalLevels = ProgressManager.Instance != null ? ProgressManager.Instance.TotalLevels : 4;
         currentLevel = Mathf.Clamp(levelIndex, 1, totalLevels);
 
+        customWinRequirement = null;
+
         SetState(GameState.Playing);
-        LoadGameSceneIfDifferent();
+        LoadLevelSceneIfDifferent();
     }
 
     public void RestartLevel()
     {
+        customWinRequirement = null;
         SetState(GameState.Playing);
-        ReloadGameScene();
+        ReloadLevelScene();
+    }
+
+    private void LoadLevelSceneIfDifferent()
+    {
+        if (!useSceneLoading)
+            return;
+
+        string target = GetSceneNameForLevel(currentLevel);
+
+        if (SceneManager.GetActiveScene().name == target)
+            return;
+
+        TryLoadScene(target);
+    }
+
+    private void ReloadLevelScene()
+    {
+        if (!useSceneLoading)
+            return;
+
+        TryLoadScene(GetSceneNameForLevel(currentLevel));
     }
 
     public void PauseGame()
@@ -171,28 +250,36 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Playing);
     }
 
-    public void QuitToMenu()
-    {
-        GoToMainMenu();
-    }
-
     public void TriggerLoss(LossReason reason)
     {
         if (currentState != GameState.Playing)
             return;
 
+        lastLossReason = reason;
+
         Debug.LogWarning($"[GameManager] Loss triggered: {reason}");
+
+        if (OnLossTriggered != null)
+            OnLossTriggered.Invoke(reason);
+
         SetState(GameState.GameOver);
     }
 
-    // Add an optional parameter for stars (default 1 for backward compatibility)
-    public void TriggerWin(int earnedStars = 1)
+    public void TriggerWin()
     {
         if (currentState != GameState.Playing)
             return;
 
-        // Use 0-based index internally
-        ProgressManager.Instance.CompleteLevel(currentLevel - 1, earnedStars);
+        if (!CanWin())
+        {
+            TriggerLoss(LossReason.NotEnoughPaper);
+            return;
+        }
+
+        // Use the star-based ProgressManager API
+        // CurrentLevel is 1-based, CompleteLevel expects 0-based index
+        if (ProgressManager.Instance != null)
+            ProgressManager.Instance.CompleteLevel(currentLevel - 1, 1);
 
         SetState(GameState.LevelComplete);
     }
@@ -210,13 +297,50 @@ public class GameManager : MonoBehaviour
             GoToMainMenu();
     }
 
-    public void QuitApplication()
+    public bool CanWin()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        if (customWinRequirement == null)
+            return true;
+
+        return customWinRequirement.Invoke();
+    }
+
+    public string GetCurrentLossText()
+    {
+        return GetLossText(lastLossReason);
+    }
+
+    public static string GetLossText(LossReason reason)
+    {
+        switch (reason)
+        {
+            case LossReason.CameraCaught:
+                return "You were caught by a security camera.";
+
+            case LossReason.ScannerColorMismatch:
+                return "You entered the scanner with the wrong color.";
+
+            case LossReason.ScannerEmptySlot:
+                return "Your slot passed the scanner empty.";
+
+            case LossReason.SlotReachedEndEmpty:
+                return "Your slot reached the end without you.";
+
+            case LossReason.Electrocuted:
+                return "You were electrocuted.";
+
+            case LossReason.LeftBehind:
+                return "You were left behind.";
+
+            case LossReason.NotEnoughPaper:
+                return "You need to collect at least one paper.";
+
+            case LossReason.External:
+                return "You failed.";
+
+            default:
+                return "You failed.";
+        }
     }
 
     public void NotifyGameSceneReady()
@@ -242,14 +366,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Convenience methods for UnityEvents or teammate systems.
-    public void TriggerLossCamera() => TriggerLoss(LossReason.CameraCaught);
-    public void TriggerLossElectricity() => TriggerLoss(LossReason.Electrocuted);
-    public void TriggerLossScannerMismatch() => TriggerLoss(LossReason.ScannerColorMismatch);
-    public void TriggerLossScannerEmptySlot() => TriggerLoss(LossReason.ScannerEmptySlot);
-    public void TriggerLossSlotEndEmpty() => TriggerLoss(LossReason.SlotReachedEndEmpty);
-    public void TriggerLossLeftBehind() => TriggerLoss(LossReason.LeftBehind);
-    public void TriggerLossExternal() => TriggerLoss(LossReason.External);
+    public void QuitApplication()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 
     private void SetState(GameState newState)
     {
@@ -260,6 +384,7 @@ public class GameManager : MonoBehaviour
         }
 
         currentState = newState;
+
         EnsureTimeScale();
 
         if (OnGameStateChanged != null)
@@ -268,17 +393,40 @@ public class GameManager : MonoBehaviour
 
     private void EnsureTimeScale()
     {
-        if (currentState == GameState.Paused || currentState == GameState.GameOver)
+        if (currentState == GameState.Paused ||
+            currentState == GameState.GameOver ||
+            currentState == GameState.LevelComplete)
+        {
             Time.timeScale = 0f;
+        }
         else
+        {
             Time.timeScale = 1f;
+        }
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == gameSceneName)
-        {
+        if (IsGameplayScene(scene.name))
+            {
+            if (currentState == GameState.MainMenu ||
+                currentState == GameState.LevelSelect ||
+                currentState == GameState.Settings)
+            {
+                SetState(GameState.Playing);
+            }
+
             EnsureTimeScale();
+        }
+        else if (scene.name == menuSceneName)
+        {
+            if (currentState == GameState.Playing ||
+                currentState == GameState.Paused ||
+                currentState == GameState.GameOver ||
+                currentState == GameState.LevelComplete)
+            {
+                SetState(GameState.MainMenu);
+            }
         }
     }
 
@@ -314,26 +462,21 @@ public class GameManager : MonoBehaviour
 
     private bool TryLoadScene(string sceneName)
     {
-        // Check if scene exists in Build Settings by name
-        bool sceneExists = false;
-        for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings; i++)
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
+
+        for (int i = 0; i < sceneCount; i++)
         {
-            string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
-            string name = System.IO.Path.GetFileNameWithoutExtension(path);
-            if (name == sceneName)
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string nameOnly = Path.GetFileNameWithoutExtension(scenePath);
+
+            if (nameOnly == sceneName)
             {
-                sceneExists = true;
-                break;
+                SceneManager.LoadScene(sceneName);
+                return true;
             }
         }
 
-        if (!sceneExists)
-        {
-            Debug.LogError($"[GameManager] Scene '{sceneName}' is not in Build Settings. Add it to File > Build Settings.");
-            return false;
-        }
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-        return true;
+        Debug.LogError($"[GameManager] Scene '{sceneName}' is not in Build Settings. Add it to File > Build Settings.");
+        return false;
     }
 }
