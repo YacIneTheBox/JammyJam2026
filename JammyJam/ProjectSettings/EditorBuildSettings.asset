@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Yacine/Scenes/Lvl2.unity
     guid: 7e5ba57155540f147a434b4435dcb86c
+  - enabled: 1
+    path: Assets/Yacine/Scenes/Lvl1.unity
+    guid: d0216bb338c00b24581f959ce7a6a1c4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

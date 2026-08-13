@@ -1899,10 +1899,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   menuSceneName: MainMenu
-  gameSceneName: SceneYacine
+  gameSceneName: Lvl1
   useSceneLoading: 1
   levelSceneNames:
-  - SceneYacine
+  - Lvl1
   - Lvl2
   currentState: 0
   currentLevel: 1
