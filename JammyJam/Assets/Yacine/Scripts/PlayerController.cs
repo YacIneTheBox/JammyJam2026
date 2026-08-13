@@ -111,7 +111,9 @@ public class PlayerController : MonoBehaviour
         // 3. Application de la vélocité finale
         Vector2 finalVelocity = playerVelocity;
         
-        if (isOnBelt && ghostSlot != null)
+        // LA CORRECTION EST ICI : 
+        // On n'ajoute la force du tapis que si le joueur a complètement relâché les contrôles
+        if (isOnBelt && ghostSlot != null && moveInput.magnitude <= 0.01f)
         {
             finalVelocity += ghostSlot.CurrentVelocity;
         }
