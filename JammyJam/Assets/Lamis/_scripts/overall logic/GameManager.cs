@@ -26,7 +26,8 @@ public enum LossReason
     Electrocuted,
     LeftBehind,
     NotEnoughPaper,
-    External
+    External,
+    OutOfCameraSight
 }
 
 public class GameManager : MonoBehaviour
@@ -209,7 +210,7 @@ public class GameManager : MonoBehaviour
     public void RestartLevel()
     {
         customWinRequirement = null;
-        SetState(GameState.Playing);
+        // On SUPPRIME SetState(GameState.Playing); pour garder le jeu en pause
         ReloadLevelScene();
     }
 
@@ -263,6 +264,8 @@ public class GameManager : MonoBehaviour
             OnLossTriggered.Invoke(reason);
 
         SetState(GameState.GameOver);
+
+
     }
 
     public void TriggerWin()
@@ -319,6 +322,9 @@ public class GameManager : MonoBehaviour
 
             case LossReason.ScannerColorMismatch:
                 return "You entered the scanner with the wrong color.";
+
+            case LossReason.OutOfCameraSight: // <-- AJOUTE CECI
+                return "stays in camera sight";
 
             case LossReason.ScannerEmptySlot:
                 return "Your slot passed the scanner empty.";
@@ -408,10 +414,13 @@ public class GameManager : MonoBehaviour
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (IsGameplayScene(scene.name))
-            {
+        {
+            // On ajoute GameOver et LevelComplete ici pour forcer le passage en Playing une fois la scène chargée
             if (currentState == GameState.MainMenu ||
                 currentState == GameState.LevelSelect ||
-                currentState == GameState.Settings)
+                currentState == GameState.Settings ||
+                currentState == GameState.GameOver || 
+                currentState == GameState.LevelComplete)
             {
                 SetState(GameState.Playing);
             }

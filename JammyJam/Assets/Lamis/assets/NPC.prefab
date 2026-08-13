@@ -80,7 +80,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8619770133461343732, guid: 5e84798de63002d4391c38b549f27872, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -195,7 +195,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5102958941349801699, guid: efe2760c2f2d98a47a56f421b413e242, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -427,7 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62ae2e42fc0c64449b89ced5be059cef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcColorVisual
-  spriteRenderer: {fileID: 5368945779703821493}
+  spriteRenderer: {fileID: 5449745901623883095}
   additionalSpriteRenderers: []
   tints:
     defaultColor: {r: 1, g: 1, b: 1, a: 1}
