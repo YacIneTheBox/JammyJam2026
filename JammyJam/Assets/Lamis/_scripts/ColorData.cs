@@ -12,35 +12,35 @@ public enum ColorId
 }
 
 [Serializable]
-public class ColorSpriteSet
+public class ColorTintSet
 {
-    public Sprite defaultSprite;
-    public Sprite redSprite;
-    public Sprite greenSprite;
-    public Sprite blueSprite;
-    public Sprite brownSprite;
+    public Color defaultColor = Color.white;
+    public Color redColor = Color.red;
+    public Color greenColor = Color.green;
+    public Color blueColor = Color.blue;
+    public Color brownColor = new Color(0.55f, 0.35f, 0.15f, 1f);
 
-    public Sprite GetSprite(ColorId colorId)
+    public Color GetColor(ColorId colorId)
     {
         switch (colorId)
         {
             case ColorId.Default:
-                return defaultSprite;
+                return defaultColor;
 
             case ColorId.Red:
-                return redSprite;
+                return redColor;
 
             case ColorId.Green:
-                return greenSprite;
+                return greenColor;
 
             case ColorId.Blue:
-                return blueSprite;
+                return blueColor;
 
             case ColorId.Brown:
-                return brownSprite;
+                return brownColor;
 
             default:
-                return defaultSprite;
+                return defaultColor;
         }
     }
 }
