@@ -326,7 +326,10 @@ public class GameSceneUI : MonoBehaviour
         }
 
         if (state == GameState.LevelComplete)
+        {
             UpdateNextLevelButton();
+            UpdateWinStars();
+        }
     }
 
     private void UpdateWinStars()

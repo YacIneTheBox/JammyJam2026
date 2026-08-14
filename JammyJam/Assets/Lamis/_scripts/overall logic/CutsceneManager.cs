@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PanelSequenceManager : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class PanelSequenceManager : MonoBehaviour
     public class PanelData
     {
         public GameObject panel;
-        public float displayDuration = 2f; // How long this panel stays visible
+        public float displayDuration = 2f;
     }
 
     [Header("Sequence Settings")]
@@ -25,9 +25,15 @@ public class PanelSequenceManager : MonoBehaviour
     [Tooltip("Duration of the final fade to black when the scene ends.")]
     public float sceneEndFadeDuration = 1.5f;
 
-    [Header("Scene Transition")]
-    [Tooltip("The name of the next scene to load after the sequence completes.")]
+    [Header("Skip Settings")]
+    [Tooltip("The key used to skip the cutscene.")]
+    public Key skipKey = Key.X;
+
+    [Header("Scene Transition (Fallback)")]
+    [Tooltip("Only used if GameManager is missing. Otherwise GameManager handles the transition.")]
     public string nextSceneName;
+
+    private bool isSkipping = false;
 
     private void Start()
     {
@@ -54,6 +60,8 @@ public class PanelSequenceManager : MonoBehaviour
     {
         for (int i = 0; i < panels.Count; i++)
         {
+            if (isSkipping) break;
+
             // Activate current panel
             if (panels[i].panel != null)
             {
@@ -62,15 +70,28 @@ public class PanelSequenceManager : MonoBehaviour
 
             // Fade IN current panel (Black -> Transparent)
             yield return StartCoroutine(Fade(1f, 0f, fadeDuration));
+            if (isSkipping) break;
 
-            // Display time for the current panel
-            yield return new WaitForSeconds(panels[i].displayDuration);
+            // Display time for the current panel (checking for skip every frame)
+            float timer = 0f;
+            while (timer < panels[i].displayDuration)
+            {
+                if (CheckSkipInput())
+                {
+                    isSkipping = true;
+                    break;
+                }
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            if (isSkipping) break;
 
             // If it's NOT the last panel, fade out before showing the next panel
             if (i < panels.Count - 1)
             {
                 // Fade OUT current panel (Transparent -> Black)
                 yield return StartCoroutine(Fade(0f, 1f, fadeDuration));
+                if (isSkipping) break;
 
                 // Deactivate current panel while screen is black
                 if (panels[i].panel != null)
@@ -81,18 +102,38 @@ public class PanelSequenceManager : MonoBehaviour
         }
 
         // --- FINAL SCENE END FADE ---
-        // Fade to black to cleanly close the scene
-        yield return StartCoroutine(Fade(0f, 1f, sceneEndFadeDuration));
+        // If skipped, do a quick fade to black. If normal, use the configured duration.
+        float finalFadeTime = isSkipping ? 0.5f : sceneEndFadeDuration;
+        float startAlpha = fadePanel != null ? fadePanel.color.a : 0f;
 
-        // Load the given next scene
-        if (!string.IsNullOrEmpty(nextSceneName))
+        yield return StartCoroutine(Fade(startAlpha, 1f, finalFadeTime));
+
+        // --- TRANSITION ---
+        // Tell the GameManager the cutscene is done so it loads the actual level
+        if (GameManager.HasInstance)
         {
-            SceneManager.LoadScene(nextSceneName);
+            GameManager.Instance.FinishCutscene();
         }
         else
         {
-            Debug.LogWarning("Next scene name is empty!");
+            // Fallback if GameManager is somehow missing
+            Debug.LogWarning("GameManager not found! Loading scene directly.");
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
+            }
         }
+    }
+
+    private bool CheckSkipInput()
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard[skipKey].wasPressedThisFrame)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private IEnumerator Fade(float startAlpha, float endAlpha, float duration)
@@ -103,6 +144,14 @@ public class PanelSequenceManager : MonoBehaviour
 
         while (elapsedTime < duration)
         {
+            // Allow skipping even during fades
+            if (CheckSkipInput())
+            {
+                isSkipping = true;
+                SetFadeAlpha(1f); // Instantly snap to black if skipped during a fade
+                yield break;
+            }
+
             elapsedTime += Time.deltaTime;
             float newAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / duration);
             SetFadeAlpha(newAlpha);

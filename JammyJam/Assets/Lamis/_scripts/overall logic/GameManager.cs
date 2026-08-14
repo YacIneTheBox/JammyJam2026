@@ -13,7 +13,8 @@ public enum GameState
     Playing,
     Paused,
     GameOver,
-    LevelComplete
+    LevelComplete,
+    Cutscene
 }
 
 public enum LossReason
@@ -79,6 +80,12 @@ public class GameManager : MonoBehaviour
     [Header("Level Scenes")]
     [Tooltip("Scene name for each level, in order. Element 0 = Level 1. Leave empty to use Game Scene Name for all levels.")]
     public List<string> levelSceneNames = new List<string>();
+
+    [Header("Cutscenes")]
+    [Tooltip("Optional cutscene scene name for each level. Element 0 = Level 1. Leave empty for no cutscene.")]
+    public List<string> levelCutsceneNames = new List<string>();
+
+    [SerializeField] private int pendingLevelAfterCutscene = 0;
 
     [SerializeField] private int lastEarnedStars = 0;
     public int LastEarnedStars => lastEarnedStars;
@@ -161,6 +168,30 @@ public class GameManager : MonoBehaviour
         return gameSceneName;
     }
 
+    public string GetCutsceneNameForLevel(int levelIndex)
+    {
+        int i = levelIndex - 1;
+
+        if (levelCutsceneNames != null && i >= 0 && i < levelCutsceneNames.Count && !string.IsNullOrEmpty(levelCutsceneNames[i]))
+            return levelCutsceneNames[i];
+
+        return null;
+    }
+
+    public void FinishCutscene()
+    {
+        if (currentState != GameState.Cutscene)
+            return;
+
+        int level = pendingLevelAfterCutscene > 0 ? pendingLevelAfterCutscene : 1;
+        pendingLevelAfterCutscene = 0;
+
+        currentLevel = level;
+
+        SetState(GameState.Playing);
+        LoadLevelSceneIfDifferent();
+    }
+
     public bool IsGameplayScene(string sceneName)
     {
         if (sceneName == gameSceneName)
@@ -206,8 +237,19 @@ public class GameManager : MonoBehaviour
 
         customWinRequirement = null;
 
-        SetState(GameState.Playing);
-        LoadLevelSceneIfDifferent();
+        string cutscene = GetCutsceneNameForLevel(currentLevel);
+
+        if (!string.IsNullOrEmpty(cutscene))
+        {
+            pendingLevelAfterCutscene = currentLevel;
+            SetState(GameState.Cutscene);
+            TryLoadScene(cutscene);
+        }
+        else
+        {
+            SetState(GameState.Playing);
+            LoadLevelSceneIfDifferent();
+        }
     }
 
     public void RestartLevel()

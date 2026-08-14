@@ -1066,7 +1066,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &403608746
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1111,7 +1111,7 @@ MonoBehaviour:
   filledStarColor: {r: 1, g: 1, b: 1, a: 1}
   useDebugOverride: 0
   debugUnlocked: 01000000
-  debugStars: 03000000000000000000000000000000
+  debugStars: 00000000000000000000000000000000
 --- !u!114 &403608748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3481,6 +3481,9 @@ MonoBehaviour:
   levelSceneNames:
   - SceneYacine
   - Lvl2
+  levelCutsceneNames:
+  - CutScene
+  pendingLevelAfterCutscene: 0
   lastEarnedStars: 0
   currentState: 0
   currentLevel: 1
