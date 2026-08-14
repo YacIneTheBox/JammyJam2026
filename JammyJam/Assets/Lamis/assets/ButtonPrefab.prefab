@@ -440,6 +440,7 @@ GameObject:
   - component: {fileID: 210032653286314029}
   - component: {fileID: 8730270402285482904}
   - component: {fileID: 7834443453387599565}
+  - component: {fileID: 1190828590059342934}
   m_Layer: 5
   m_Name: ButtonPrefab
   m_TagString: Untagged
@@ -570,6 +571,24 @@ MonoBehaviour:
   - {fileID: 2183298510270608635}
   - {fileID: 1295188001833182303}
   backgroundImage: {fileID: 210032653286314029}
+--- !u!114 &1190828590059342934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533369984593905885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 678feab7b5093934d8090e2ca6a8695d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: {x: 1.1, y: 1.1, z: 1}
+  scaleDuration: 0.1
+  hoverSFX: {fileID: 8300000, guid: 937e7920e556b8244b107cb577a8eafe, type: 3}
+  clickSFX: {fileID: 8300000, guid: bc83c6f079f4c2c4a88420c1eb428f9b, type: 3}
+  hoverVolume: 1
+  clickVolume: 1
 --- !u!1 &7891943936775647327
 GameObject:
   m_ObjectHideFlags: 0
