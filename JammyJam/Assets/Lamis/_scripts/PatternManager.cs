@@ -10,8 +10,12 @@ public class PatternManager : MonoBehaviour
     [Header("Designer Patterns")]
     public List<ColorPattern> patterns = new List<ColorPattern>();
 
-    [Tooltip("Pattern used at startup.")]
+    [Tooltip("Pattern used at startup if Randomize Start Pattern is false.")]
     public int startingPatternIndex = 0;
+
+    // --- NOUVELLE OPTION POUR L'ALÉATOIRE ---
+    [Tooltip("If true, a random pattern will be chosen at startup.")]
+    public bool randomizeStartPattern = true; 
 
     [Tooltip("For testing only. In normal gameplay this should be false, because a Pattern Checkpoint reveals the pattern.")]
     public bool startRevealed = false;
@@ -41,9 +45,22 @@ public class PatternManager : MonoBehaviour
         Instance = this;
 
         if (patterns != null && patterns.Count > 0)
-            currentPatternIndex = Mathf.Clamp(startingPatternIndex, 0, patterns.Count - 1);
+        {
+            // --- C'EST ICI QUE LA MAGIE OPÈRE ---
+            if (randomizeStartPattern)
+            {
+                // Sélectionne un index aléatoire entre 0 (inclus) et patterns.Count (exclu)
+                currentPatternIndex = UnityEngine.Random.Range(0, patterns.Count);
+            }
+            else
+            {
+                currentPatternIndex = Mathf.Clamp(startingPatternIndex, 0, patterns.Count - 1);
+            }
+        }
         else
+        {
             currentPatternIndex = 0;
+        }
 
         patternRevealed = startRevealed;
     }

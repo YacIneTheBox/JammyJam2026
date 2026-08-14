@@ -3504,7 +3504,7 @@ MonoBehaviour:
   - levelIndex: 1
     totalItems: 5
   - levelIndex: 2
-    totalItems: 5
+    totalItems: 13
   - levelIndex: 3
     totalItems: 5
   collected: 0

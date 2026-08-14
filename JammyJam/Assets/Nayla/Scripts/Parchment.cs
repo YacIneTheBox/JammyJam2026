@@ -6,7 +6,9 @@ public class Parchment : MonoBehaviour
     [Header("Magnet & Shrink Settings")]
     [SerializeField] private float animationDuration = 0.35f; // Time in seconds to complete animation
     [SerializeField] private AnimationCurve speedCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-
+    [SerializeField] private AudioClip collectSound; // <-- Ajout de la variable pour le son
+    [Range(0f, 1f)]
+    [SerializeField] private float soundVolume = 1f;
     private bool isCollected = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -28,6 +30,7 @@ public class Parchment : MonoBehaviour
                 LevelCollectionManager.Instance.CollectItem();
             }
 
+            AudioManager.Instance.PlaySFX(collectSound, soundVolume);
             // Start the magnet animation towards the player
             StartCoroutine(MagnetAndScaleToTarget(collision.transform));
         }
