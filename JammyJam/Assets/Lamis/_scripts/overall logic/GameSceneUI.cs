@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class GameSceneUI : MonoBehaviour
 {
@@ -30,6 +31,19 @@ public class GameSceneUI : MonoBehaviour
     public TMP_Text paperCounterText;
     public Slider suspicionMeter;
 
+    [Header("Pattern Alert")]
+    public GameObject patternAlertPanel;
+    public TMP_Text patternAlertText;
+
+    [Tooltip("How long the alert banner stays visible.")]
+    public float alertDisplayTime = 2.5f;
+
+    [Tooltip("Optional sound played when the alert fires.")]
+    public AudioSource alertSound;
+
+    private PatternManager cachedPatternManager;
+    private Coroutine alertCoroutine;
+
     private GameManager cachedGameManager;
 
     private void Awake()
@@ -47,6 +61,11 @@ public class GameSceneUI : MonoBehaviour
 
         SubscribeToGameManager();
         UpdateNextLevelButton();
+
+        cachedPatternManager = PatternManager.Instance;
+
+        if (cachedPatternManager != null)
+            cachedPatternManager.OnPatternAlert += HandlePatternAlert;
     }
 
     private void Update()
@@ -73,11 +92,12 @@ public class GameSceneUI : MonoBehaviour
             LevelCollectionManager.Instance.OnCollectionChanged -= HandleCollectionChanged;
     }
 
-
-
     private void OnDestroy()
     {
         RemoveListeners();
+
+        if (cachedPatternManager != null)
+            cachedPatternManager.OnPatternAlert -= HandlePatternAlert;
     }
 
     private void SubscribeToGameManager()
@@ -212,6 +232,33 @@ public class GameSceneUI : MonoBehaviour
     {
         Debug.Log($"[GameSceneUI] Next Level clicked. Current state: {GameManager.Instance.CurrentState}");
         GameManager.Instance.ContinueAfterWin();
+    }
+
+    private void HandlePatternAlert()
+    {
+        if (patternAlertPanel != null)
+            patternAlertPanel.SetActive(true);
+
+        if (patternAlertText != null)
+            patternAlertText.text = "PATTERN CHANGE INCOMING!";
+
+        if (alertSound != null)
+            alertSound.Play();
+
+        if (alertCoroutine != null)
+            StopCoroutine(alertCoroutine);
+
+        alertCoroutine = StartCoroutine(HideAlertAfterDelay());
+    }
+
+    private IEnumerator HideAlertAfterDelay()
+    {
+        yield return new WaitForSeconds(alertDisplayTime);
+
+        if (patternAlertPanel != null)
+            patternAlertPanel.SetActive(false);
+
+        alertCoroutine = null;
     }
 
     private void HandleLossTriggered(LossReason reason)

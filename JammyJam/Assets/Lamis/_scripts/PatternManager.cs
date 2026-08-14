@@ -18,6 +18,14 @@ public class PatternManager : MonoBehaviour
 
     public event Action OnPatternStateChanged;
 
+    public event Action OnPatternAlert;
+
+    public void TriggerPatternAlert()
+    {
+        if (OnPatternAlert != null)
+            OnPatternAlert.Invoke();
+    }
+
     [Header("Debug Read Only")]
     [SerializeField] private int currentPatternIndex;
     [SerializeField] private bool patternRevealed;
