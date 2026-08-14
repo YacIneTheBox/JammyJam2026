@@ -1,9 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LevelSelectUI : MonoBehaviour
 {
+    [Header("Transition")]
+    public ScreenTransitionManager transitionManager;
+
     [Header("References")]
     public Transform buttonContainer;
     public Button levelButtonPrefab;
@@ -150,7 +154,25 @@ public class LevelSelectUI : MonoBehaviour
 
         // 5. Click Handler
         int capturedIndex = levelIndex;
-        button.onClick.AddListener(() => GameManager.Instance.StartLevel(capturedIndex + 1));
+        button.onClick.AddListener(() =>
+        {
+            if (transitionManager != null)
+            {
+                // Fade to black FIRST, then call StartLevel
+                transitionManager.FadeAndExecute(() =>
+                {
+                    if (GameManager.Instance != null)
+                    {
+                        GameManager.Instance.StartLevel(capturedIndex + 1);
+                    }
+                });
+            }
+            else if (GameManager.Instance != null)
+            {
+                // Backup direct load if transitionManager field is empty
+                GameManager.Instance.StartLevel(capturedIndex + 1);
+            }
+        });
 
         return button;
     }
