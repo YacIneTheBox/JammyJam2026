@@ -23,8 +23,26 @@ public class LevelCollectionManager : MonoBehaviour
     [SerializeField] private int totalInLevel = 0;
 
     public int Collected => collected;
-
     public int TotalInLevel => totalInLevel;
+
+    /// 0 stars = nothing, 1 = less than half, 2 = at least two thirds, 3 = all
+    public int CalculateStars()
+    {
+        if (totalInLevel <= 0 || collected <= 0)
+            return 0;
+
+        if (collected >= totalInLevel)
+            return 3;
+
+        // "count total and divide by 3 and round it"
+        int third = Mathf.Max(1, Mathf.RoundToInt(totalInLevel / 3f));
+        int twoThirds = third * 2;
+
+        if (collected >= twoThirds)
+            return 2;
+
+        return 1;
+    }
 
     public event Action<int, int> OnCollectionChanged;
 

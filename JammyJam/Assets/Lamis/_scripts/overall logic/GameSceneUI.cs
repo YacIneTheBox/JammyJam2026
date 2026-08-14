@@ -41,6 +41,18 @@ public class GameSceneUI : MonoBehaviour
     [Tooltip("Optional sound played when the alert fires.")]
     public AudioSource alertSound;
 
+    [Header("Win Stars")]
+    [Tooltip("Assign the 3 star images from the LevelCompletePanel, in order.")]
+    public Image[] winStars;
+
+    [Header("Death")]
+    public PlayerDeathHandler deathHandler;
+
+    private bool deathPending;
+
+    public Color winStarEarnedColor = Color.white;
+    public Color winStarEmptyColor = new Color(0f, 0f, 0f, 0.25f);
+
     private PatternManager cachedPatternManager;
     private Coroutine alertCoroutine;
 
@@ -66,6 +78,12 @@ public class GameSceneUI : MonoBehaviour
 
         if (cachedPatternManager != null)
             cachedPatternManager.OnPatternAlert += HandlePatternAlert;
+
+        if (deathHandler == null)
+            deathHandler = FindAnyObjectByType<PlayerDeathHandler>();
+
+        if (deathHandler != null)
+            deathHandler.OnDeathFinished += HandleDeathFinished;
     }
 
     private void Update()
@@ -96,8 +114,17 @@ public class GameSceneUI : MonoBehaviour
     {
         RemoveListeners();
 
-        if (cachedPatternManager != null)
-            cachedPatternManager.OnPatternAlert -= HandlePatternAlert;
+        if (deathHandler != null)
+            deathHandler.OnDeathFinished -= HandleDeathFinished;
+    }
+
+    private void HandleDeathFinished()
+    {
+        if (deathPending && GameManager.Instance.CurrentState == GameState.GameOver)
+        {
+            deathPending = false;
+            SetPanel(gameOverPanel, true);
+        }
     }
 
     private void SubscribeToGameManager()
@@ -273,19 +300,47 @@ public class GameSceneUI : MonoBehaviour
 
         SetPanel(hudPanel, state == GameState.Playing || state == GameState.Paused);
         SetPanel(pausePanel, state == GameState.Paused);
-        SetPanel(gameOverPanel, state == GameState.GameOver);
         SetPanel(levelCompletePanel, state == GameState.LevelComplete);
 
-        if (state == GameState.GameOver && lossReasonText != null)
+        if (state == GameState.GameOver)
         {
-            if (cachedGameManager != null)
-                lossReasonText.text = cachedGameManager.GetCurrentLossText();
+            if (lossReasonText != null)
+                lossReasonText.text = GameManager.Instance.GetCurrentLossText();
+
+            if (deathHandler != null)
+            {
+                // Wait for the death animation before showing the panel
+                deathPending = true;
+                SetPanel(gameOverPanel, false);
+            }
             else
-                lossReasonText.text = GameManager.GetLossText(LossReason.External);
+            {
+                // No death handler -> show immediately
+                SetPanel(gameOverPanel, true);
+            }
+        }
+        else
+        {
+            deathPending = false;
+            SetPanel(gameOverPanel, false);
         }
 
         if (state == GameState.LevelComplete)
             UpdateNextLevelButton();
+    }
+
+    private void UpdateWinStars()
+    {
+        if (winStars == null)
+            return;
+
+        int stars = GameManager.Instance.LastEarnedStars;
+
+        for (int i = 0; i < winStars.Length; i++)
+        {
+            if (winStars[i] != null)
+                winStars[i].color = (i < stars) ? winStarEarnedColor : winStarEmptyColor;
+        }
     }
 
     private void HandleCollectionChanged(int collected, int total)

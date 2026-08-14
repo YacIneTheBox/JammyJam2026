@@ -80,6 +80,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Scene name for each level, in order. Element 0 = Level 1. Leave empty to use Game Scene Name for all levels.")]
     public List<string> levelSceneNames = new List<string>();
 
+    [SerializeField] private int lastEarnedStars = 0;
+    public int LastEarnedStars => lastEarnedStars;
+
     [Header("Debug Read Only")]
     [SerializeField] private GameState currentState = GameState.MainMenu;
     [SerializeField] private int currentLevel = 1;
@@ -273,16 +276,22 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Playing)
             return;
 
-        if (!CanWin())
+        int stars = 1;
+
+        if (LevelCollectionManager.Instance != null)
+            stars = LevelCollectionManager.Instance.CalculateStars();
+
+        lastEarnedStars = stars;
+
+        // Nothing collected -> no stars -> not a win
+        if (stars <= 0)
         {
             TriggerLoss(LossReason.NotEnoughPaper);
             return;
         }
 
-        // Use the star-based ProgressManager API
-        // CurrentLevel is 1-based, CompleteLevel expects 0-based index
         if (ProgressManager.Instance != null)
-            ProgressManager.Instance.CompleteLevel(currentLevel - 1, 1);
+            ProgressManager.Instance.CompleteLevel(currentLevel - 1, stars);
 
         SetState(GameState.LevelComplete);
     }
