@@ -10,12 +10,12 @@ public class LevelCollectionManager : MonoBehaviour
     [System.Serializable]
     public struct LevelInfo
     {
-        [Tooltip("1-based level number, matches GameManager.CurrentLevel")]
-        public int levelIndex;
+        public string sceneName;
         public int totalItems;
     }
 
     [Header("Setup")]
+    [Tooltip("Optional manual totals per scene. If a scene is missing or total is 0, parchments are counted automatically.")]
     public List<LevelInfo> levels = new List<LevelInfo>();
 
     [Header("Debug Read Only")]
@@ -24,25 +24,6 @@ public class LevelCollectionManager : MonoBehaviour
 
     public int Collected => collected;
     public int TotalInLevel => totalInLevel;
-
-    /// 0 stars = nothing, 1 = less than half, 2 = at least two thirds, 3 = all
-    public int CalculateStars()
-    {
-        if (totalInLevel <= 0 || collected <= 0)
-            return 0;
-
-        if (collected >= totalInLevel)
-            return 3;
-
-        // "count total and divide by 3 and round it"
-        int third = Mathf.Max(1, Mathf.RoundToInt(totalInLevel / 3f));
-        int twoThirds = third * 2;
-
-        if (collected >= twoThirds)
-            return 2;
-
-        return 1;
-    }
 
     public event Action<int, int> OnCollectionChanged;
 
@@ -71,23 +52,35 @@ public class LevelCollectionManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Only reset when entering the gameplay scene
-        if (GameManager.Instance.gameSceneName != scene.name)
+        // React to ANY gameplay scene (GameScene, Level1, Level2, ...), not just one name
+        if (GameManager.HasInstance && !GameManager.Instance.IsGameplayScene(scene.name))
             return;
 
+        // 1) Reset the count for the new level
         collected = 0;
 
-        int currentLevel = GameManager.Instance.CurrentLevel;
+        // 2) Find the total: manual entry first, otherwise count parchments in the scene
+        LevelInfo match = levels.Find(l => l.sceneName == scene.name);
 
-        LevelInfo match = levels.Find(l => l.levelIndex == currentLevel);
-        totalInLevel = match.totalItems > 0 ? match.totalItems : 0;
-
-        // Enforce "at least one paper" win rule only if the level has papers
-        if (totalInLevel > 0)
-            GameManager.Instance.customWinRequirement = () => collected >= 1;
+        if (match.totalItems > 0)
+        {
+            totalInLevel = match.totalItems;
+        }
         else
-            GameManager.Instance.customWinRequirement = null;
+        {
+            totalInLevel = FindObjectsByType<Parchment>(FindObjectsSortMode.None).Length;
+        }
 
+        // 3) Enforce "at least one paper" win rule
+        if (GameManager.HasInstance)
+        {
+            if (totalInLevel > 0)
+                GameManager.Instance.customWinRequirement = () => collected >= 1;
+            else
+                GameManager.Instance.customWinRequirement = null;
+        }
+
+        // 4) Update the HUD (0 / 13, etc.)
         NotifyCollectionChanged();
     }
 
@@ -97,9 +90,24 @@ public class LevelCollectionManager : MonoBehaviour
 
         NotifyCollectionChanged();
 
-        Debug.Log($"[Collection] Level {GameManager.Instance.CurrentLevel} | Collected: {collected} / {totalInLevel}");
+        Debug.Log($"[Collection] Collected: {collected} / {totalInLevel}");
+    }
 
-        GameProgress.SaveLevelProgress("Level_" + GameManager.Instance.CurrentLevel, collected, totalInLevel);
+    public int CalculateStars()
+    {
+        if (totalInLevel <= 0 || collected <= 0)
+            return 0;
+
+        if (collected >= totalInLevel)
+            return 3;
+
+        int third = Mathf.Max(1, Mathf.RoundToInt(totalInLevel / 3f));
+        int twoThirds = third * 2;
+
+        if (collected >= twoThirds)
+            return 2;
+
+        return 1;
     }
 
     private void NotifyCollectionChanged()
