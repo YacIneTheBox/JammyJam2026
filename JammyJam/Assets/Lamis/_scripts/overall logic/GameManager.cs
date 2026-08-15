@@ -71,8 +71,8 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Scene Names")]
-    public string menuSceneName = "MenuScene";
-    public string gameSceneName = "GameScene";
+    public string menuSceneName = "MainMenu";
+    public string gameSceneName = "SceneYacine";
 
     [Tooltip("If false, menus and gameplay are expected to be inside the same scene.")]
     public bool useSceneLoading = true;

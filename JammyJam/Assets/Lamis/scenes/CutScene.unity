@@ -512,8 +512,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 6c3fab9dd71927c4290d7326df735849, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.788
-  m_Pitch: 1
+  m_Volume: 0.636
+  m_Pitch: 0.9
   Loop: 1
   Mute: 0
   Spatialize: 0
@@ -1427,6 +1427,7 @@ MonoBehaviour:
   fadePanel: {fileID: 1063368583}
   fadeDuration: 0.5
   sceneEndFadeDuration: 1.5
+  skipKey: 38
   nextSceneName: SceneYacine
 --- !u!1 &1365041048
 GameObject:
